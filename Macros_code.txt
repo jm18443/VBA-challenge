@@ -1,0 +1,80 @@
+Sub Ticker()
+
+For Each ws In Worksheets
+
+Dim name As String
+Dim nor As Integer
+Dim i As Integer
+Dim current As String
+Dim roww As Integer
+Dim opene As Double
+Dim closee As Double
+Dim volume As Double
+
+Cells(1, 9).Value = "Ticker"
+Cells(1, 10).Value = "Yearly Change"
+Cells(1, 11).Value = "Percent Change"
+Cells(1, 12).Value = "Total Stock Volume"
+
+roww = 2
+
+name = Cells(2, 1).Value
+opene = Cells(2, 3).Value
+
+nor = Range("A1").End(xlDown).Row
+
+For i = 2 To nor
+
+current = Cells(i, 1).Value
+
+
+If current = name Then
+
+volume = volume + Cells(i, 7)
+
+Else
+last = Cells(i - 1, 1).Value
+closee = Cells(i - 1, 6).Value
+
+Cells(roww, 9).Value = last
+Cells(roww, 10).Value = closee - opene
+Cells(roww, 11).Value = FormatPercent(((closee - opene) / opene), 2)
+Cells(roww, 12).Value = volume
+
+roww = roww + 1
+
+name = Cells(i, 1).Value
+
+opene = Cells(i, 3).Value
+
+volume = 0
+End If
+
+Next i
+
+  Range("J2").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, _
+        Formula1:="=0"
+    Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
+    With Selection.FormatConditions(1).Interior
+        .PatternColorIndex = xlAutomatic
+        .Color = 5296274
+        .TintAndShade = 0
+    End With
+    Selection.FormatConditions(1).StopIfTrue = False
+    Selection.FormatConditions.Add Type:=xlCellValue, Operator:=xlLess, _
+        Formula1:="=0"
+    Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
+    With Selection.FormatConditions(1).Interior
+        .PatternColorIndex = xlAutomatic
+        .Color = 255
+        .TintAndShade = 0
+    End With
+    Selection.FormatConditions(1).StopIfTrue = False
+    ActiveWindow.SmallScroll Down:=-64
+'MsgBox (tor)
+
+Next ws
+
+End Sub
